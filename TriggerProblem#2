@@ -1,0 +1,36 @@
+//Write a trigger for When ever Lead is created with LeadSource as Web then give rating as cold otherwise hot.
+
+trigger LeadTrigger on Lead (before insert) {
+
+if(Trigger.isBefore && Trigger.isInsert) {
+    
+    LeadTriggerHandler.setLeadRating(Trigger.new);
+}
+
+}
+
+public class LeadTriggerHandler {
+    
+    public static void setLeadRating(List<Lead> leads){
+        
+        for(lead l : leads) {
+            
+            if(l.leadsource != null && l.leadsource == 'Web'){
+                
+                l.Rating = 'cold';
+                
+                
+                
+            } else {
+                
+                l.Rating = 'Hot';
+                
+            }
+        }
+        
+        
+    }
+    
+    
+
+}
