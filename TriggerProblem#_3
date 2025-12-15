@@ -1,0 +1,35 @@
+// write a trigger for Whenever New Account Record is created then needs to create associated Contact Record automatically.
+
+trigger AccountTrigger on Account (before insert, after insert) {
+
+    
+    if(trigger.isAfter && trigger.isinsert){
+        
+        AccountTriggerHandlertwo.createContacts(Trigger.new);
+        
+        
+    }
+}
+
+public class AccountTriggerHandlertwo {
+    
+    public static void createContacts(List<Account> accounts){
+        
+        List<Contact> contactsToinsert = new list<contact>();
+        
+        for(Account acc: accounts){
+            
+            Contact con = new Contact();
+            con.LastName = acc.Name;
+            con.AccountId = acc.Id;
+            
+            contactsToInsert.add(con);
+        }
+        
+        if(!contactsToInsert.isEmpty()) {
+            
+            insert contactsToInsert;
+        }
+    }
+
+}
