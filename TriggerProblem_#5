@@ -1,0 +1,26 @@
+//An active account should not be deleted.
+
+trigger AccountTrigger on Account ( before delete) {
+
+    if(Trigger.isBefore && Trigger.isDelete) {
+        
+        AccountDeleteTriggerHandlertwo.checkActive(Trigger.old);
+    }
+}
+
+public class AccountDeleteTriggerHandlertwo {
+    
+    public static void checkActive(List<Account> accounts){
+        
+        for(Account acc : accounts){
+            
+            if(acc.Active__c == 'Yes') {
+                
+                acc.addError('Active Accounts cannot be deleted');
+            }
+        }
+        
+        
+    }
+
+}
