@@ -1,0 +1,48 @@
+//Whenever user deletes an account send an confirmation email to user.
+
+trigger AccountTrigger on Account (before insert, after insert) {
+
+    if (Trigger.isAfter && Trigger.isDelete) {
+        AccountDeleteTriggerHandler.sendDeleteConfirmationEmail(Trigger.old);
+}
+}
+
+public class AccountDeleteTriggerHandler {
+    
+    public static void sendDeleteConfirmationEmail(list<Account> deletedAccounts)
+    {
+        if (deletedAccounts == null || deletedAccounts.isEmpty()) return;
+        
+        Integer maxNames = 20;
+        
+        List<string> names = new List<string>();
+        
+        for(Account a : deletedAccounts) {
+            
+            if(names.size() >= maxNames) break;
+            names.add(a.Name); 
+         }
+        
+        string userEmail = userinfo.getUserEmail();
+        if(String.isBlank(userEmail)) return;
+        
+        String subject = 'Account Delete Confirmation';
+        String body = 'Hi,\n\n' +
+            'You deleted ' + deletedAccounts.size() + ' Account record(s).\n\n' +
+            'Deleted Account Names (up to ' + maxNames + '):\n- ' + String.join(names, '\n- ') + '\n\n' +
+            (deletedAccounts.size() > maxNames ? '...and more.\n\n' : '\n') +
+            'Thanks,\nSalesforce';
+        
+        Messaging.SingleEmailMessage mail = new Messaging.SingleEmailMessage();
+        mail.setToAddresses(new List<String>{ userEmail });
+        mail.setSubject(subject);
+        mail.setPlainTextBody(body);
+        try{ Messaging.sendEmail(new List<Messaging.SingleEmailMessage>{ mail });}
+           
+        catch(Exception e){
+            
+             System.debug('Email Error: ' + e.getMessage());
+        }
+
+    }
+}
